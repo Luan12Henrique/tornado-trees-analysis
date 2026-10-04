@@ -1,27 +1,27 @@
+import io.ResultExporter;
+import io.TornadoCsvLoader;
+import metrics.Benchmark;
+import model.Tornado;
 import tree.BSTree;
 
+import java.io.IOException;
+import java.util.List;
+
 public class Main {
-    public static void main(String[] args) {
-        BSTree<Integer, String> arvore = new BSTree<>();
+    public static void main(String[] args) throws IOException {
+        TornadoCsvLoader loader = new TornadoCsvLoader();
+        List<Tornado> tornados = loader.carregar("data/tornado_sample.csv");
 
-        arvore.inserir(50, "Tornado A");
-        arvore.inserir(30, "Tornado B");
-        arvore.inserir(70, "Tornado C");
-        arvore.inserir(20, "Tornado D");
-        arvore.inserir(40, "Tornado E");
+        System.out.println("Total de tornados carregados: " + tornados.size());
 
-        System.out.println("Busca pela chave 30: " + arvore.buscar(30));
-        System.out.println("Busca pela chave 99: " + arvore.buscar(99));
+        BSTree<Long, Tornado> arvore = new BSTree<>();
+        Benchmark benchmark = new Benchmark();
 
-        System.out.println("Altura da árvore: " + arvore.altura());
+        List<String> resultados = benchmark.medirAlturaIncremental(arvore, tornados, 100);
 
-        System.out.println("Pré-ordem: " + arvore.percorrer("pre"));
-        System.out.println("Em-ordem: " + arvore.percorrer("in"));
-        System.out.println("Pós-ordem: " + arvore.percorrer("pos"));
+        ResultExporter exporter = new ResultExporter();
+        exporter.exportarAlturaIncremental("results/altura_bst.csv", resultados);
 
-        arvore.remover(30);
-        System.out.println("Em-ordem após remover 30: " + arvore.percorrer("in"));
-
-        System.out.println("Comparações até agora: " + arvore.contadorComparacoes());
+        System.out.println("Resultados exportados para results/altura_bst.csv");
     }
 }
