@@ -73,7 +73,7 @@ public class BSTree<K extends Comparable<K>, V> implements Tree<K, V> {
         } else {
             return atual.dado;
         }
-    }
+    } 
 
     @Override
     public int altura() {
@@ -82,7 +82,7 @@ public class BSTree<K extends Comparable<K>, V> implements Tree<K, V> {
 
     private int alturaRecursiva(No<K, V> atual) {
         if (atual == null) {
-            return -1;
+            return -1; /* */
         }
 
         int alturaEsquerda = alturaRecursiva(atual.esquerda);

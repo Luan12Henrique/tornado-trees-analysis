@@ -18,7 +18,7 @@ public class Benchmark {
 
         for (int i = 0; i < dados.size(); i++) {
             Tornado t = dados.get(i);
-            arvore.inserir(t.getId(), t);
+            arvore.inserir(t.getId(), t); //polimorfismo 
 
             int quantidadeInserida = i + 1;
             if (quantidadeInserida % passo == 0 || quantidadeInserida == dados.size()) {

@@ -3,6 +3,7 @@ import io.TornadoCsvLoader;
 import metrics.Benchmark;
 import model.Tornado;
 import tree.BSTree;
+import tree.AVLTree;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,14 +15,20 @@ public class Main {
 
         System.out.println("Total de tornados carregados: " + tornados.size());
 
-        BSTree<Long, Tornado> arvore = new BSTree<>();
+        BSTree<Long, Tornado> arvoreBST = new BSTree<>();
+        AVLTree<Long, Tornado> arvoreAVL = new AVLTree<>();
+        
         Benchmark benchmark = new Benchmark();
 
-        List<String> resultados = benchmark.medirAlturaIncremental(arvore, tornados, 100);
+        List<String> resultadosBST = benchmark.medirAlturaIncremental(arvoreBST, tornados, 100);
 
         ResultExporter exporter = new ResultExporter();
-        exporter.exportarAlturaIncremental("results/altura_bst.csv", resultados);
+        exporter.exportarAlturaIncremental("results/altura_bst.csv", resultadosBST);
+
+        List<String> resultadosAVL = benchmark.medirAlturaIncremental(arvoreAVL, tornados, 100);
+        exporter.exportarAlturaIncremental("results/altura_avl.csv", resultadosAVL);
 
         System.out.println("Resultados exportados para results/altura_bst.csv");
+        System.out.println("Resultados exportados para results/altura_avl.csv");
     }
 }
