@@ -1,0 +1,10 @@
+arvore,cenario,operacao,quantidade,tempo_total_us,tempo_medio_us,comparacoes_total,comparacoes_medias,altura_final
+BST,cronologico,inserir,74956,1789524.100,23.874,223971432,2988.04,6921
+BST,cronologico,buscar,74956,1544529.600,20.606,224046388,2989.04,6921
+BST,cronologico,remover,37478,640343.400,17.086,84153233,2245.40,3524
+AVL,cronologico,inserir,74956,13566.200,0.181,1218344,16.25,17
+AVL,cronologico,buscar,74956,18175.200,0.242,1162047,15.50,17
+AVL,cronologico,remover,37478,12245.200,0.327,600014,16.01,17
+RBT,cronologico,inserir,74956,14055.400,0.188,1907091,25.44,28
+RBT,cronologico,buscar,74956,27704.300,0.370,1208357,16.12,28
+RBT,cronologico,remover,37478,20882.900,0.557,565964,15.10,19

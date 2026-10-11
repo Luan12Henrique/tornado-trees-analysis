@@ -7,74 +7,71 @@ import tree.AVLTree;
 import tree.RedBlackTree;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Arquivo: src/Main.java
+ *
+ * Carrega o dataset de tornados e roda os benchmarks nas 3 árvores
+ * (BST, AVL e Rubro-Negra), inserindo os dados na ordem original do arquivo
+ * (cronológica, quase ordenada). Os resultados são exportados para results/.
+ */
 public class Main {
+
+    static final String ARQUIVO = "data/tornado_full.csv";
+    static final int PASSO = 1000;      // a cada quantos elementos medir
+    static final int REPETICOES = 5;    // repetições dos testes de tempo (usa a mediana)
+
     public static void main(String[] args) throws IOException {
         TornadoCsvLoader loader = new TornadoCsvLoader();
-        List<Tornado> tornados = loader.carregar("data/tornado_sample.csv");
+        List<Tornado> tornados = loader.carregar(ARQUIVO);
 
         System.out.println("Total de tornados carregados: " + tornados.size());
 
-        BSTree<Long, Tornado> alturaBST = new BSTree<>();
-        AVLTree<Long, Tornado> alturaAVL = new AVLTree<>();
-        RedBlackTree<Long, Tornado> alturaRBT = new RedBlackTree<>();
-        
+        rodarBenchmarks(tornados);
+    }
+
+    /** Roda altura, tempo, comparações e resumo das operações (inserir, buscar, remover). */
+    static void rodarBenchmarks(List<Tornado> dados) throws IOException {
+        String cenario = "cronologico";
+        String sufixo = "";
         Benchmark benchmark = new Benchmark();
         ResultExporter exporter = new ResultExporter();
 
-        List<String> resultadosBST = benchmark.medirAlturaIncremental(alturaBST, tornados, 100);
-        exporter.exportarAlturaIncremental("results/altura_bst.csv", resultadosBST);
+        // ---------- ALTURA ----------
+        exporter.exportarAlturaIncremental("results/altura_bst" + sufixo + ".csv",
+                benchmark.medirAlturaIncremental(new BSTree<>(), dados, PASSO));
+        exporter.exportarAlturaIncremental("results/altura_avl" + sufixo + ".csv",
+                benchmark.medirAlturaIncremental(new AVLTree<>(), dados, PASSO));
+        exporter.exportarAlturaIncremental("results/altura_rbt" + sufixo + ".csv",
+                benchmark.medirAlturaIncremental(new RedBlackTree<>(), dados, PASSO));
+        System.out.println("Alturas exportadas");
 
-        List<String> resultadosAVL = benchmark.medirAlturaIncremental(alturaAVL, tornados, 100);
-        exporter.exportarAlturaIncremental("results/altura_avl.csv", resultadosAVL);
+        // ---------- TEMPO DE INSERÇÃO (aquecimento + mediana) ----------
+        exporter.exportarTempoIncremental("results/tempo_bst" + sufixo + ".csv",
+                benchmark.medirTempoIncremental(BSTree::new, dados, PASSO, REPETICOES));
+        exporter.exportarTempoIncremental("results/tempo_avl" + sufixo + ".csv",
+                benchmark.medirTempoIncremental(AVLTree::new, dados, PASSO, REPETICOES));
+        exporter.exportarTempoIncremental("results/tempo_rbt" + sufixo + ".csv",
+                benchmark.medirTempoIncremental(RedBlackTree::new, dados, PASSO, REPETICOES));
+        System.out.println("Tempos exportados");
 
-        List<String> resultadosRBT = benchmark.medirAlturaIncremental(alturaRBT, tornados, 100);
-        exporter.exportarAlturaIncremental("results/altura_rbt.csv", resultadosRBT);
+        // ---------- COMPARAÇÕES DE INSERÇÃO ----------
+        exporter.exportarComparacoesIncremental("results/comparacoes_bst" + sufixo + ".csv",
+                benchmark.medirComparacoesIncremental(new BSTree<>(), dados, PASSO));
+        exporter.exportarComparacoesIncremental("results/comparacoes_avl" + sufixo + ".csv",
+                benchmark.medirComparacoesIncremental(new AVLTree<>(), dados, PASSO));
+        exporter.exportarComparacoesIncremental("results/comparacoes_rbt" + sufixo + ".csv",
+                benchmark.medirComparacoesIncremental(new RedBlackTree<>(), dados, PASSO));
+        System.out.println("Comparações exportadas");
 
-        System.out.println("Resultados exportados para results/altura_bst.csv");
-        System.out.println("Resultados exportados para results/altura_avl.csv");
-        System.out.println("Resultados exportados para results/altura_rbt.csv");
-    
-
-
-        BSTree<Long, Tornado> tempoBST = new BSTree<>();
-        AVLTree<Long, Tornado> tempoAVL = new AVLTree<>();
-        RedBlackTree<Long, Tornado> tempoRBT = new RedBlackTree<>();
-
-        List<String> resultadosTempoBST = benchmark.medirTempoIncremental(tempoBST, tornados, 100);
-        exporter.exportarTempoIncremental("results/tempo_bst.csv", resultadosTempoBST);
-
-        List<String> resultadosTempoAVL = benchmark.medirTempoIncremental(tempoAVL, tornados, 100);
-        exporter.exportarTempoIncremental("results/tempo_avl.csv", resultadosTempoAVL);
-
-        List<String> resultadosTempoRBT = benchmark.medirTempoIncremental(tempoRBT, tornados, 100);
-        exporter.exportarTempoIncremental("results/tempo_rbt.csv", resultadosTempoRBT);
-
-        System.out.println("Resultados exportados para results/tempo_bst.csv");
-        System.out.println("Resultados exportados para results/tempo_avl.csv");
-        System.out.println("Resultados exportados para results/tempo_rbt.csv");
-
-        
-
-        BSTree<Long, Tornado> comparacoesBST = new BSTree<>();
-        AVLTree<Long, Tornado> comparacoesAVL = new AVLTree<>();
-        RedBlackTree<Long, Tornado> comparacoesRBT = new RedBlackTree<>();
-
-        List<String> resultadosComparacoesBST = benchmark.medirComparacoesIncremental(comparacoesBST, tornados, 100);
-        exporter.exportarComparacoesIncremental("results/comparacoes_bst.csv", resultadosComparacoesBST);
-
-        List<String> resultadosComparacoesAVL = benchmark.medirComparacoesIncremental(comparacoesAVL, tornados, 100);
-        exporter.exportarComparacoesIncremental("results/comparacoes_avl.csv", resultadosComparacoesAVL);
-
-        List<String> resultadosComparacoesRBT = benchmark.medirComparacoesIncremental(comparacoesRBT, tornados, 100);
-        exporter.exportarComparacoesIncremental("results/comparacoes_rbt.csv", resultadosComparacoesRBT);
-
-        System.out.println("Resultados exportados para results/comparacoes_bst.csv");
-        System.out.println("Resultados exportados para results/comparacoes_avl.csv");
-        System.out.println("Resultados exportados para results/comparacoes_rbt.csv");
-
-
-        }
-
+        // ---------- RESUMO: INSERIR, BUSCAR E REMOVER ----------
+        List<String> operacoes = new ArrayList<>();
+        operacoes.addAll(benchmark.medirOperacoes("BST", cenario, BSTree::new, dados, REPETICOES));
+        operacoes.addAll(benchmark.medirOperacoes("AVL", cenario, AVLTree::new, dados, REPETICOES));
+        operacoes.addAll(benchmark.medirOperacoes("RBT", cenario, RedBlackTree::new, dados, REPETICOES));
+        exporter.exportarOperacoes("results/operacoes" + sufixo + ".csv", operacoes);
+        System.out.println("Operações exportadas (results/operacoes" + sufixo + ".csv)");
+    }
 }
